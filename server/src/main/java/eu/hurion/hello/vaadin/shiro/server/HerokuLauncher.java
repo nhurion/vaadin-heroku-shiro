@@ -33,7 +33,7 @@ public class HerokuLauncher {
         ShiroEmbedVaadin.forApplication(HerokuShiroApplication.class)
                 .withHttpPort(getPort())
                 .withProductionMode(true)
-                .openBrowser(true)
+                //.openBrowser(true)
                 .start();
     }
 

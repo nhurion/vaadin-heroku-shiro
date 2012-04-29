@@ -32,69 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * @author Nicolas Hurion
  */
-public class HerokuShiroApplication extends Application implements HttpServletRequestListener {
-
-    private static ThreadLocal<HerokuShiroApplication> currentApplication = new ThreadLocal<HerokuShiroApplication>();
-
-    public static HerokuShiroApplication getInstance() {
-        return currentApplication.get();
-    }
-
-    public void login(final String username, final String password) {
-        UsernamePasswordToken token;
-
-        token = new UsernamePasswordToken(username, password);
-        // ”Remember Me” built-in, just do this:
-        token.setRememberMe(true);
-
-        // With most of Shiro, you'll always want to make sure you're working with the currently executing user,
-        // referred to as the subject
-        final Subject currentUser = SecurityUtils.getSubject();
-
-        // Authenticate
-        currentUser.login(token);
-    }
-
-
-    public void logout() {
-        getMainWindow().getApplication().close();
-
-        Subject currentUser = SecurityUtils.getSubject();
-
-        if (currentUser.isAuthenticated()) {
-            currentUser.logout();
-        }
-    }
-
-
-    @Override
-    public void onRequestStart(HttpServletRequest request, HttpServletResponse response) {
-        HerokuShiroApplication.currentApplication.set(this);
-    }
-
-    @Override
-    public void onRequestEnd(HttpServletRequest request, HttpServletResponse response) {
-        HerokuShiroApplication.currentApplication.set(null);
-
-        HerokuShiroApplication.currentApplication.remove();
-    }
-
-    // Logout Listener is defined for the application
-    public static class LogoutListener implements Button.ClickListener {
-        private static final long serialVersionUID = 1L;
-        private HerokuShiroApplication app;
-
-
-        public LogoutListener(HerokuShiroApplication app) {
-            this.app = app;
-        }
-
-
-        @Override
-        public void buttonClick(Button.ClickEvent event) {
-            this.app.logout();
-        }
-    }
+public class HerokuShiroApplication extends Application {
 
     @Override
     public void init() {
@@ -103,5 +41,41 @@ public class HerokuShiroApplication extends Application implements HttpServletRe
         window.setContent(new LoginScreen(this));
 
     }
+
+    public void login(final String username, final String password) {
+        final UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+        token.setRememberMe(true);
+
+        final Subject currentUser = SecurityUtils.getSubject();
+
+        currentUser.login(token);
+    }
+
+
+    public void logout() {
+        getMainWindow().getApplication().close();
+        final Subject currentUser = SecurityUtils.getSubject();
+
+        if (currentUser.isAuthenticated()) {
+            currentUser.logout();
+        }
+    }
+
+    // Logout Listener is defined for the application
+    public static class LogoutListener implements Button.ClickListener {
+        private static final long serialVersionUID = 1L;
+        private HerokuShiroApplication app;
+
+        public LogoutListener(final HerokuShiroApplication app) {
+            this.app = app;
+        }
+
+
+        @Override
+        public void buttonClick(final Button.ClickEvent event) {
+            this.app.logout();
+        }
+    }
+
 
 }

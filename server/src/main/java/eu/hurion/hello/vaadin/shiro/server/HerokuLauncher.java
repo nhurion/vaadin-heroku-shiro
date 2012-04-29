@@ -30,7 +30,7 @@ public class HerokuLauncher {
 
 
     public static void main(String[] args) {
-        CustomEmbedVaadin.forApplication(HerokuShiroApplication.class)
+        ShiroEmbedVaadin.forApplication(HerokuShiroApplication.class)
                 .withHttpPort(getPort())
                 .withProductionMode(true)
                 .openBrowser(true)

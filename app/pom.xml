@@ -15,12 +15,14 @@
         <dependency>
             <groupId>com.bsb.common.vaadin</groupId>
             <artifactId>com.bsb.common.vaadin.embed</artifactId>
-            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
         </dependency>
     </dependencies>
 

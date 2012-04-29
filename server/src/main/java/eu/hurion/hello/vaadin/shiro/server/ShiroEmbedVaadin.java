@@ -27,11 +27,12 @@ import org.apache.catalina.deploy.FilterDef;
 import org.apache.catalina.deploy.FilterMap;
 
 /**
- * Custo;ized version of EmbedVaadinApplication to
+ * Customized version of EmbedVaadinApplication that add Shiro filter to server configuration.
  *
  * @author Nicolas Hurion
  */
 public class ShiroEmbedVaadin extends EmbedVaadinApplication {
+
     private EmbedVaadinConfig config;
 
     /**
@@ -71,7 +72,7 @@ public class ShiroEmbedVaadin extends EmbedVaadinApplication {
          * @param config           the config to use
          * @param applicationClass the class of the application to handle
          */
-        public EmbedVaadinWithShiro(EmbedVaadinConfig config, Class<? extends Application> applicationClass) {
+        public EmbedVaadinWithShiro(final EmbedVaadinConfig config, final Class<? extends Application> applicationClass) {
             super(config, applicationClass);
         }
 

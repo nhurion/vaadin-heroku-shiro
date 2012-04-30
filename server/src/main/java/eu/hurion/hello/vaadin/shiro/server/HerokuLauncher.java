@@ -29,17 +29,16 @@ public class HerokuLauncher {
     public static final int DEFAULT_PORT = 8080;
 
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         ShiroEmbedVaadin.forApplication(HerokuShiroApplication.class)
                 .withHttpPort(getPort())
                 .withProductionMode(true)
-                //.openBrowser(true)
                 .start();
     }
 
     private static int getPort() {
         final String envPort = System.getenv(PORT);
-        if (envPort == null) {
+        if (null == envPort) {
             return DEFAULT_PORT;
         }
         return Integer.parseInt(envPort);

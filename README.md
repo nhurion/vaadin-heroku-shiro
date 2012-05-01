@@ -1,10 +1,13 @@
-Vaadin on Heroku With multiple modules
-======================================
+Vaadin on Heroku with Shiro as Security provider
+================================================
 
-This project is a skeleton application with multiple modules.
+This project is a skeleton application with multiple modules and a simple configuration of Apache Shiro for authentication/authorization.
 It's ready to be deployed on [Heroku](http://www.heroku.com).
 
-This is basically the same project as [hello-vaadin-heroku](https://github.com/nhurion/hello-vaadin-heroku) but with a
-maven structure with multiple modules.
+It's based on [vaadin-heroku-multi](https://github.com/nhurion/vaadin-heroku-multi) and adding [Shiro](http://shiro.apache.org) to the stack.
 
-As an example, this application is deployed on heroku and accessible at http://vaadin-heroku-multi.herokuapp.com/
+The Shiro integration is largelly based on [vaadin-shiro-simple](https://github.com/eneuwirt/vaadin-shiro-simple)
+
+As an example, this application is deployed on heroku and accessible at http://vaadin-heroku-shiro.herokuapp.com/
+
+You can log-in as admin/admin or demo/demo

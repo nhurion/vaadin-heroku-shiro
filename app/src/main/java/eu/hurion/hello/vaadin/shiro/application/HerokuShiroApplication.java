@@ -19,20 +19,20 @@
 package eu.hurion.hello.vaadin.shiro.application;
 
 import com.vaadin.Application;
-import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Window;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Nicolas Hurion
  */
 public class HerokuShiroApplication extends Application {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HerokuShiroApplication.class);
 
     @Override
     public void init() {
@@ -43,11 +43,11 @@ public class HerokuShiroApplication extends Application {
     }
 
     public void login(final String username, final String password) {
+        LOGGER.debug("trying to log as " + username);
         final UsernamePasswordToken token = new UsernamePasswordToken(username, password);
         token.setRememberMe(true);
 
         final Subject currentUser = SecurityUtils.getSubject();
-
         currentUser.login(token);
     }
 
@@ -55,16 +55,15 @@ public class HerokuShiroApplication extends Application {
     public void logout() {
         getMainWindow().getApplication().close();
         final Subject currentUser = SecurityUtils.getSubject();
+        LOGGER.debug("User "+ currentUser.getPrincipal() + " logging out");
 
         if (currentUser.isAuthenticated()) {
             currentUser.logout();
         }
     }
 
-    // Logout Listener is defined for the application
     public static class LogoutListener implements Button.ClickListener {
-        private static final long serialVersionUID = 1L;
-        private HerokuShiroApplication app;
+        private final HerokuShiroApplication app;
 
         public LogoutListener(final HerokuShiroApplication app) {
             this.app = app;

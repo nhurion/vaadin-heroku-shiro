@@ -27,25 +27,24 @@ import org.apache.shiro.subject.Subject;
  */
 @SuppressWarnings("serial")
 public class HelloScreen extends VerticalLayout {
-    private final HerokuShiroApplication app;
 
     public HelloScreen(final HerokuShiroApplication app) {
-        this.app = app;
         setSizeFull();
         final Subject currentUser = SecurityUtils.getSubject();
+
         final Panel welcomePanel = new Panel();
-
         final Label label = new Label("Logged in as " + currentUser.getPrincipal().toString());
+        final Button logout = new Button("logout");
+        logout.addListener(new HerokuShiroApplication.LogoutListener(app));
 
-        Button logout = new Button("logout");
-        logout.addListener(new HerokuShiroApplication.LogoutListener(this.app));
         welcomePanel.addComponent(label);
         welcomePanel.addComponent(logout);
         welcomePanel.setWidth("400px");
         welcomePanel.setHeight("200px");
         addComponent(welcomePanel);
         setComponentAlignment(welcomePanel, Alignment.MIDDLE_CENTER);
-        HorizontalLayout footer = new HorizontalLayout();
+
+        final HorizontalLayout footer = new HorizontalLayout();
         footer.setHeight("50px");
         addComponent(footer);
 
@@ -53,18 +52,18 @@ public class HelloScreen extends VerticalLayout {
         adminButton.setEnabled(currentUser.hasRole("admin"));
         adminButton.addListener(new Button.ClickListener() {
             @Override
-            public void buttonClick(Button.ClickEvent event) {
+            public void buttonClick(final Button.ClickEvent event) {
                 getWindow().showNotification("you're an admin");
             }
         });
         welcomePanel.addComponent(adminButton);
 
-        final Button userButton = new Button("For all users");
+        final Button userButton = new Button("For users with permission 1");
         userButton.setEnabled(currentUser.isPermitted("permission_1"));
         userButton.addListener(new Button.ClickListener() {
             @Override
-            public void buttonClick(Button.ClickEvent event) {
-                getWindow().showNotification("you've permission 1");
+            public void buttonClick(final Button.ClickEvent event) {
+                getWindow().showNotification("you've got permission 1");
             }
         });
         welcomePanel.addComponent(userButton);

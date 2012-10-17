@@ -31,10 +31,10 @@ public class LoginScreen extends VerticalLayout {
     public LoginScreen(final HerokuShiroApplication app) {
         setSizeFull();
 
-        Panel loginPanel = new Panel("Login");
+        final Panel loginPanel = new Panel("Login");
         loginPanel.setWidth("400px");
 
-        LoginForm loginForm = new LoginForm();
+        final LoginForm loginForm = new LoginForm();
         loginForm.setPasswordCaption("Password");
         loginForm.setUsernameCaption("User");
         loginForm.setLoginButtonCaption("Log in");
@@ -47,7 +47,7 @@ public class LoginScreen extends VerticalLayout {
         addComponent(loginPanel);
         setComponentAlignment(loginPanel, Alignment.MIDDLE_CENTER);
 
-        HorizontalLayout footer = new HorizontalLayout();
+        final HorizontalLayout footer = new HorizontalLayout();
         footer.setHeight("50px");
         addComponent(footer);
     }

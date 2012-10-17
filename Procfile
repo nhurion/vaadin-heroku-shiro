@@ -1,1 +1,1 @@
-web:    java $JAVA_OPTS -cp server/target/classes:server/target/dependency/* eu.hurion.hello.vaadin.shiro.server.HerokuLauncher
+web:    java $JAVA_OPTS -cp target/classes:target/dependency/* eu.hurion.hello.vaadin.shiro.application.Launcher

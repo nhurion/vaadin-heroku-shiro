@@ -18,6 +18,9 @@
 
 package eu.hurion.hello.vaadin.shiro.application;
 
+
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -26,19 +29,23 @@ import org.apache.shiro.subject.Subject;
  * @author Nicolas Hurion
  */
 @SuppressWarnings("serial")
-public class HelloScreen extends VerticalLayout {
+public class HelloScreen extends VerticalLayout implements View {
+
+    private final Button logout;
 
     public HelloScreen(final HerokuShiroApplication app) {
         setSizeFull();
         final Subject currentUser = SecurityUtils.getSubject();
 
         final Panel welcomePanel = new Panel();
+        final FormLayout content = new FormLayout();
         final Label label = new Label("Logged in as " + currentUser.getPrincipal().toString());
-        final Button logout = new Button("logout");
-        logout.addListener(new HerokuShiroApplication.LogoutListener(app));
+        logout = new Button("logout");
+        logout.addClickListener(new HerokuShiroApplication.LogoutListener(app));
 
-        welcomePanel.addComponent(label);
-        welcomePanel.addComponent(logout);
+        content.addComponent(label);
+        content.addComponent(logout);
+        welcomePanel.setContent(content);
         welcomePanel.setWidth("400px");
         welcomePanel.setHeight("200px");
         addComponent(welcomePanel);
@@ -50,23 +57,28 @@ public class HelloScreen extends VerticalLayout {
 
         final Button adminButton = new Button("For admin only");
         adminButton.setEnabled(currentUser.hasRole("admin"));
-        adminButton.addListener(new Button.ClickListener() {
+        adminButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(final Button.ClickEvent event) {
-                getWindow().showNotification("you're an admin");
+                Notification.show("you're an admin");
             }
         });
-        welcomePanel.addComponent(adminButton);
+        content.addComponent(adminButton);
 
         final Button userButton = new Button("For users with permission 1");
         userButton.setEnabled(currentUser.isPermitted("permission_1"));
-        userButton.addListener(new Button.ClickListener() {
+        userButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(final Button.ClickEvent event) {
-                getWindow().showNotification("you've got permission 1");
+                Notification.show("you've got permission 1");
             }
         });
-        welcomePanel.addComponent(userButton);
+        content.addComponent(userButton);
 
+    }
+
+    @Override
+    public void enter(final ViewChangeListener.ViewChangeEvent event) {
+        logout.focus();
     }
 }

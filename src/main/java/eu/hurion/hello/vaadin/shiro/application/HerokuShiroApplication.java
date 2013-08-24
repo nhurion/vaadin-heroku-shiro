@@ -18,9 +18,11 @@
 
 package eu.hurion.hello.vaadin.shiro.application;
 
-import com.vaadin.Application;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.UI;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
@@ -30,16 +32,52 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Nicolas Hurion
  */
-public class HerokuShiroApplication extends Application {
+public class HerokuShiroApplication extends UI {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HerokuShiroApplication.class);
 
     @Override
-    public void init() {
-        final Window window = new Window();
-        setMainWindow(window);
-        window.setContent(new LoginScreen(this));
+    public void init(final VaadinRequest vaadinRequest) {
+        new Navigator(this, this);
+        final LoginScreen loginScreen = new LoginScreen(this);
+        getUI().getNavigator().addView("Login", loginScreen);
 
+
+        //
+        // We use a view change handler to ensure the user is always redirected
+        // to the login view if the user is not logged in.
+        //
+        getNavigator().addViewChangeListener(new ViewChangeListener() {
+
+            @Override
+            public boolean beforeViewChange(ViewChangeEvent event) {
+
+                // Check if a user has logged in
+                final boolean isLoggedIn = SecurityUtils.getSubject().isAuthenticated();
+                final boolean isLoginView = event.getNewView() instanceof LoginScreen;
+
+                if (!isLoggedIn && !isLoginView) {
+                    // Redirect to login view always if a user has not yet
+                    // logged in
+                    getNavigator().navigateTo("Login");
+                    return false;
+
+                } else if (isLoggedIn && isLoginView) {
+                    // If someone tries to access to login view while logged in,
+                    // then cancel
+                    return false;
+                }
+
+                return true;
+            }
+
+            @Override
+            public void afterViewChange(ViewChangeEvent event) {
+
+            }
+        });
+
+        getUI().getNavigator().navigateTo("Login");
     }
 
     public void login(final String username, final String password) {
@@ -49,17 +87,22 @@ public class HerokuShiroApplication extends Application {
 
         final Subject currentUser = SecurityUtils.getSubject();
         currentUser.login(token);
+        final HelloScreen helloScreen = new HelloScreen(this);
+
+        getUI().getNavigator().addView("Hello", helloScreen);
+        getUI().getNavigator().navigateTo("Hello");
     }
 
-
     public void logout() {
-        getMainWindow().getApplication().close();
+        getSession().close();
         final Subject currentUser = SecurityUtils.getSubject();
         LOGGER.debug("User "+ currentUser.getPrincipal() + " logging out");
 
         if (currentUser.isAuthenticated()) {
             currentUser.logout();
+            getNavigator().removeView("Hello");
         }
+        getUI().getNavigator().navigateTo("Login");
     }
 
     public static class LogoutListener implements Button.ClickListener {

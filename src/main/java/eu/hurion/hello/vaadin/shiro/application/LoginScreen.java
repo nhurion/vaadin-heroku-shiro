@@ -18,31 +18,36 @@
 
 package eu.hurion.hello.vaadin.shiro.application;
 
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
-import org.apache.shiro.authc.*;
 
 /**
  * @author Nicolas Hurion
  */
 @SuppressWarnings("serial")
-public class LoginScreen extends VerticalLayout {
+public class LoginScreen extends VerticalLayout implements View {
 
+
+    private final TextField user;
+    private final PasswordField password;
 
     public LoginScreen(final HerokuShiroApplication app) {
         setSizeFull();
 
         final Panel loginPanel = new Panel("Login");
-        loginPanel.setWidth("400px");
-
-        final LoginForm loginForm = new LoginForm();
-        loginForm.setPasswordCaption("Password");
-        loginForm.setUsernameCaption("User");
-        loginForm.setLoginButtonCaption("Log in");
-
-        loginForm.setHeight("100px");
-        loginForm.addListener(new ShiroLoginListener(app, loginForm));
-
-        loginPanel.addComponent(loginForm);
+        loginPanel.setWidth("300px");
+        final FormLayout content = new FormLayout();
+        content.setSizeFull();
+        user = new TextField("User");
+        content.addComponent(user);
+        password = new PasswordField("Password");
+        content.addComponent(password);
+        final Button loginButton = new Button("Log in");
+        content.setHeight("150px");
+        loginButton.addClickListener(new ShiroLoginListener(app));
+        content.addComponent(loginButton);
+        loginPanel.setContent(content);
 
         addComponent(loginPanel);
         setComponentAlignment(loginPanel, Alignment.MIDDLE_CENTER);
@@ -52,37 +57,24 @@ public class LoginScreen extends VerticalLayout {
         addComponent(footer);
     }
 
-    private static final class ShiroLoginListener implements LoginForm.LoginListener {
+    @Override
+    public void enter(final ViewChangeListener.ViewChangeEvent event) {
+        user.focus();
+    }
+
+    private final class ShiroLoginListener implements Button.ClickListener {
 
         private final HerokuShiroApplication app;
-        private final LoginForm loginForm;
 
-        public ShiroLoginListener(final HerokuShiroApplication app, final LoginForm loginForm) {
+        public ShiroLoginListener(final HerokuShiroApplication app) {
             this.app = app;
-            this.loginForm = loginForm;
         }
 
-        @Override
-        public void onLogin(final LoginForm.LoginEvent event) {
-            final String username = event.getLoginParameter("username");
-            final String password = event.getLoginParameter("password");
 
-            try {
-                app.login(username, password);
-                app.getMainWindow().setContent(new HelloScreen(app));
-            } catch (UnknownAccountException uae) {
-                this.loginForm.getWindow().showNotification("Invalid User", Window.Notification.TYPE_ERROR_MESSAGE);
-            } catch (IncorrectCredentialsException ice) {
-                this.loginForm.getWindow().showNotification("Invalid User", Window.Notification.TYPE_ERROR_MESSAGE);
-            } catch (LockedAccountException lae) {
-                this.loginForm.getWindow().showNotification("Invalid User", Window.Notification.TYPE_ERROR_MESSAGE);
-            } catch (ExcessiveAttemptsException eae) {
-                this.loginForm.getWindow().showNotification("Invalid User", Window.Notification.TYPE_ERROR_MESSAGE);
-            } catch (AuthenticationException ae) {
-                this.loginForm.getWindow().showNotification("Invalid User", Window.Notification.TYPE_ERROR_MESSAGE);
-            } catch (Exception ex) {
-                this.loginForm.getWindow().showNotification("Exception " + ex.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-            }
+        @Override
+        public void buttonClick(final Button.ClickEvent event) {
+            app.login(user.getValue(), password.getValue());
+            password.setValue("");
         }
     }
 }
